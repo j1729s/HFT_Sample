@@ -25,8 +25,8 @@ We measured feed delay using local receive time vs Bybit timestamps.
 
 > Note: this measures *feed delay* as observed by the client, not exchange round-trip latency.
 
-**Plot (to be added)**
-- `docs/ticker_latency_timeseries_hist.png`
+**Plot**
+- `images/latency_hist.png`
 
 ---
 
@@ -57,4 +57,4 @@ Implement a market-making bot based on:
 From the repo root:
 
 ```
-bash python3 Bybit/Sample_main.py
+bash python3 Sample_main.py
