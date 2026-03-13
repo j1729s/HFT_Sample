@@ -11,7 +11,7 @@ Located in: `Bybit/`
 
 **What’s included**
 - **WebSocket market-data ingest** for:
-  - `orderbook.1.<symbol>` (top-of-book / “ticker-like” stream)
+  - `orderbook.1.<symbol>` (top-of-book stream)
   - `orderbook.50.<symbol>` (snapshot + delta)
 - Opens **3 WebSocket connections** to the same topic (staggered) to reduce latency spikes.
 - Uses `orjson` for fast JSON decoding.
