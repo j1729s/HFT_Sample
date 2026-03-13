@@ -23,7 +23,7 @@ We measured feed delay using local receive time vs Bybit timestamps.
 - Typical observed latency: **~6–8 ms**
 - Test environment: **Vultr VPS (Singapore)** (same country as Bybit servers)
 
-> Note: this measures *feed delay* as observed by the client, not exchange round-trip latency.
+> Note: this measures *feed delay* as observed by the client, not exchange round-trip latency. Winsorization is required because when the websocket connects it will always have a huge latency which drops within a couple seconds of connection.
 
 ![Tick Latency](images/latency_hist.png)
 
