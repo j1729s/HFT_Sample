@@ -1,1 +1,60 @@
-```markdown # HFT_Sample A small, clean-room sample repository showcasing low-latency market-data ingestion, state-building, and market-making research implementations. This repo is intentionally **NDA-safe** and focuses on **engineering clarity** and **reproducibility** over breadth. ## Repository Structure (planned) ``` HFT_Sample/ Bybit/ PUBLIC_CONNECT.py BYBIT_STATE.py __init__.py Binance_RS/ # (planned) Rust market-data connector MM_Paper_PY/ # (planned) Guéant / Avellaneda–Stoikov market maker docs/ # (planned) notes + figures ``` ## What’s already implemented (Bybit / Python) ### 1) Multi-connection order book ingestion (fastest-first) The `Bybit/` Python module implements: - **Orderbook Level 1** (`orderbook.1.*`) stream (“ticker-like” top-of-book) - **Orderbook Level 50** (`orderbook.50.*`) stream (snapshot + delta) Key design choices: - Opens **3 WebSocket connections** to the same endpoint with a stagger between connections to reduce “always-last” effects. - Uses a shared FIFO queue and a monotonic gate to accept the earliest-arriving update. - Uses **orjson** for faster JSON decoding. - Logs to uniquely named log files using a user-provided `run_tag`. ### 2) Latency measurement and analysis We measured feed delay using the difference between local receive time and Bybit message timestamps: - Typical observed latency: **~6–8 ms** - Test environment: **Vultr VPS (Singapore)** *(same country as Bybit’s servers; not necessarily the same region/zone)* A plot (time-series + histogram) will be added here: - `docs/ticker_latency_timeseries_hist.png` *(planned)* > Note: This is **feed delay** as observed by the client and is not “exchange round-trip latency”. ## What’s next (planned) ### 1) Bybit / Python (expand) - Add **trades stream** ingestion and processing - Improve state builders: - TickerState (top-of-book only) - OrderBookTopN (top 50 levels per side, scaled-int keys) - Add a small “examples/” runner script and CLI flags (symbol, run_tag) ### 2) Binance / Rust (market data connector) Add a Rust module focused on efficient market-data ingestion: - WebSocket connector for key streams (e.g., `bookTicker`, `aggTrade`) - Efficient parsing and bounded buffering - Small internal benchmark: **parse + enqueue** throughput/latency (without over-claiming “ultra low latency”) ### 3) Market making paper implementation (Python) Add a research/implementation module based on: - **Avellaneda–Stoikov** optimal market making - **Olivier Guéant** extensions (inventory/risk-aware optimal quoting) Planned deliverables: - Minimal simulator / backtest harness - Metrics and regime behaviour notes (range-bound vs one-sided markets) - Simple risk controls (inventory limits, throttling, regime filters) ## Running the current Bybit code From the repo root: ```bash python3 Bybit/PUBLIC_CONNECT.py ``` Update the `run_tag` and symbol in the `__main__` section as needed. ## Notes - This repository is a public sample. It avoids client identifiers, proprietary parameters, and any market manipulation tooling. - The code is intentionally modular so additional exchanges/streams can be added without rewriting the core. ```
+# HFT_Sample
+
+A clean-room sample repository showcasing market-data ingestion, state building, and market-making research implementations. This repo is intentionally **NDA-safe** and focuses on **clarity** and **reproducibility** over breadth.
+
+---
+
+## Current Status (Implemented)
+
+### Bybit (Python)
+Located in: `Bybit/`
+
+**What’s included**
+- **WebSocket market-data ingest** for:
+  - `orderbook.1.<symbol>` (top-of-book / “ticker-like” stream)
+  - `orderbook.50.<symbol>` (snapshot + delta)
+- Opens **3 WebSocket connections** to the same topic (staggered) to reduce latency spikes.
+- Uses `orjson` for fast JSON decoding.
+- Logs to per-run files using a user-provided `run_tag`.
+
+### Latency testing (Bybit orderbook.1)
+We measured feed delay using local receive time vs Bybit timestamps.
+
+- Typical observed latency: **~6–8 ms**
+- Test environment: **Vultr VPS (Singapore)** (same country as Bybit servers)
+
+> Note: this measures *feed delay* as observed by the client, not exchange round-trip latency.
+
+**Plot (to be added)**
+- `docs/ticker_latency_timeseries_hist.png`
+
+---
+
+
+---
+
+## Roadmap
+
+### 1) Bybit (Python)
+- Add **trades stream** ingestion + processing (trade prints, basic feature hooks)
+
+### 2) Binance (Rust)
+Build a Rust market-data connector focused on practical low-latency patterns:
+- WebSocket connector for key streams (e.g., `bookTicker`, `aggTrade`)
+- **Bounded ring buffer / channels** with **lock-free sharing** (single-producer / single-consumer where possible)
+- **Busy-Spin** consumer with **core isolation** for hot-path processing (documented and clearly scoped)
+- Micro-benchmark: parse → enqueue cost and throughput (no exaggerated claims)
+
+### 3) Market making paper (Python)
+Implement a market-making bot based on:
+- **Avellaneda–Stoikov**
+- **Olivier Guéant** extensions to optimal market making
+
+---
+
+## How to run (current Bybit code)
+
+From the repo root:
+
+```
+bash python3 Bybit/Sample_main.py
