@@ -25,8 +25,7 @@ We measured feed delay using local receive time vs Bybit timestamps.
 
 > Note: this measures *feed delay* as observed by the client, not exchange round-trip latency.
 
-**Plot**
-![](images/latency_hist.png)
+![Tick Latency](images/latency_hist.png)
 
 ---
 
