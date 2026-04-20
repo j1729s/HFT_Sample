@@ -369,7 +369,7 @@ async def run_ticker(symbol: str, run_tag: str, market: str = "linear"):
         latency_flush_every=256,
         latency_sample_every=10,
     )
-    ingest.state = TickerState(price_scale=100, qty_scale=1_000)
+    ingest.state = TickerState(price_scale=2, qty_scale=3)
     await ingest.run()
 
 
@@ -390,7 +390,7 @@ async def run_orderbook(symbol: str, run_tag: str, market: str = "linear"):
         latency_flush_every=256,
         latency_sample_every=1,
     )
-    ingest.state = OrderBookTopN(N=50, price_scale=100, qty_scale=1_000)
+    ingest.state = OrderBookTopN(N=50, price_scale=2, qty_scale=3)
     await ingest.run()
 
 
