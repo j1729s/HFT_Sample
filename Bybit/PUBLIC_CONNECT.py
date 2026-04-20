@@ -304,7 +304,7 @@ async def run_ticker(symbol: str, run_tag: str, market: str = "linear"):
         stream_name=stream_name,
         logger=log,
     )
-    ingest.state = TickerState(price_scale=2, qty_scale=3)
+    ingest.state = TickerState(price_scale=100, qty_scale=1_000)
     await ingest.run()
 
 
@@ -324,7 +324,7 @@ async def run_orderbook(symbol: str, run_tag: str, market: str = "linear"):
         stream_name=stream_name,
         logger=log,
     )
-    ingest.state = OrderBookTopN(N=50, price_scale=2, qty_scale=3)
+    ingest.state = OrderBookTopN(N=50, price_scale=100, qty_scale=1_000)
     await ingest.run()
 
 
