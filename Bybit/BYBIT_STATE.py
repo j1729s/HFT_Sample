@@ -4,6 +4,22 @@ from __future__ import annotations
 from typing import Optional
 
 
+def _scale_digits(scale: int) -> int:
+    if scale < 1:
+        raise ValueError("scale must be >= 1")
+
+    n = scale
+    digits = 0
+    while n > 1 and n % 10 == 0:
+        n //= 10
+        digits += 1
+
+    if n != 1:
+        raise ValueError("scale must be a power of 10")
+
+    return digits
+
+
 def to_int_scaled(x: str, scale: int, digits: int) -> int:
     if not x:
         return 0
@@ -55,8 +71,8 @@ class TickerState:
     def __init__(self, price_scale: int, qty_scale: int):
         self.price_scale = price_scale
         self.qty_scale = qty_scale
-        self.price_digits = price_scale
-        self.qty_digits = qty_scale
+        self.price_digits = _scale_digits(price_scale)
+        self.qty_digits = _scale_digits(qty_scale)
 
         self.bb_p = 0
         self.bb_q = 0
@@ -168,8 +184,8 @@ class OrderBookTopN:
         self.N = N
         self.price_scale = price_scale
         self.qty_scale = qty_scale
-        self.price_digits = price_scale
-        self.qty_digits = qty_scale
+        self.price_digits = _scale_digits(price_scale)
+        self.qty_digits = _scale_digits(qty_scale)
 
         self.bids: dict[int, int] = {}
         self.asks: dict[int, int] = {}
